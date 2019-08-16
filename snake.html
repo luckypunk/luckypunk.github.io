@@ -1,0 +1,193 @@
+<html>
+  <head>
+    <title>
+      SNAKE
+    </title>
+    <style>
+      body {background-color:#000; color:#ccc;}
+      td {width:22px; height:22px; background-color:#111;}
+      td.w {background-color:#ccc;}
+      td.k {background-color:#111;}
+      td.r {background-color:#c00;}
+      td.g {background-color:#0c0;}
+      table {border: 5px solid blue;}
+    </style>
+    <script>
+      var width = 40;
+      var height = 40;
+      var hx = 1;
+      var hy = 0;
+      var lx = 0;
+      var ly = 0;
+      var sx = [0, 1];
+      var sy = [0, 0];
+      var hidx = 2;
+      var tidx = 0;
+      var maxlen = width * height;
+      var addlen = 0;
+      var snakelen = 2;
+      var freestyle = 1;
+      var speed = document.getElementById ('speed');
+      var wait = 500;
+      function setto (x, y, s) {
+        var t=document.getElementById('t' + x + '_' + y);
+	t.className = s;
+      }
+      function getfrom (x, y) {
+        var t=document.getElementById('t' + x + '_' + y);
+	return t.className;
+      }
+      function msg (s) {
+        var h1 = document.createElement('h1');
+        document.body.appendChild (h1);
+        var text = document.createTextNode (s);
+	h1.appendChild (text);
+      }
+      function rndloot () {
+        do {
+	  if (Math.random () > 0.5) {
+	    lx = 0;
+	  } else {
+            lx = Math.floor (Math.random () * width);
+	  }
+	  ly = Math.floor (Math.random () * height);
+	} while (getfrom (lx, ly) != "");
+//	if (lx == 0) {
+//	  wait = 50;
+//	} else {
+//	  wait = 0;
+//	}
+	setto (lx, ly, "r");
+      }
+      function movesnake () {
+        if (addlen > 0) {
+	  --addlen;
+	  ++snakelen;
+	  if (snakelen > 0.51 * maxlen) {
+	    freestyle = 0;
+	  }
+	} else {
+	  setto (sx[tidx], sy[tidx], "");
+	  ++tidx;
+	  if (tidx >= maxlen) {
+	    tidx = 0;
+	  }
+	}
+        setto (hx, hy, "w");
+	if (hy == 0) { // top line
+	  if (hx == width - 1) { // right column
+	    ++hy;
+	  } else {
+	    ++hx;
+	  }
+	} else if (hy == height - 1) { // bottom line
+	  if (hx == 0) {
+	    --hy;
+	  } else {
+	    --hx;
+	  }
+	} else if (hx == 0) {
+	  if (freestyle
+	      && (ly >= hy)
+	      && ( (hy & 1) == 0)
+	      && (getfrom (hx + 1, hy) != "w")
+	      && (getfrom (width - 1, hy) != "w") ) {
+	    ++hx;
+	  } else {
+	    --hy;
+	  }
+	} else if ( (hy & 1) == 0) {
+	  if (freestyle
+	      && ( (hx == width - 1)
+	         || (getfrom (hx + 1, hy) == "w") ) ) {
+	    if (getfrom (hx, hy + 1) != "w") {
+	      ++hy;
+	    } else {
+	      --hx;
+	    }
+	  } else {
+	    if (freestyle || (hx != width - 1) ) {
+	      ++hx;
+	    } else {
+	      ++hy;
+	    }
+	  }
+	} else {
+	  var ty;
+	  if (lx == 0) {
+	    ty = ly - 1;
+	  } else {
+	    ty = ly - 2;
+	  }
+	  if (freestyle
+	      && (hx == width - 1)
+	      && (ty >= hy)
+	      && (getfrom (hx, hy +1) != "w") ) {
+	    ++hy;
+	  } else if (hx == 1) {
+	    if (freestyle
+	        && (ly <= hy)
+		&& (getfrom (hx - 1, hy) != "w") ) {
+              --hx;
+	    } else {
+	      ++hy;
+	    }
+	  } else {
+	    if (getfrom (hx - 1, hy) != "w") {
+	      --hx;
+	    } else if (getfrom (hx, hy + 1) != "w") {
+	      ++hy;
+	    } else if (getfrom (hx + 1, hy) != "w") {
+	      ++hx;
+	    } else {
+	      --hy;
+	    }
+	  }
+	}
+	if (getfrom (hx, hy) == "w") {
+	  msg ("DAMN!");
+	  return;
+	}
+	setto (hx, hy, "g");
+	sx[hidx] = hx;
+	sy[hidx] = hy;
+	++hidx;
+	if (hidx >= maxlen) {
+	  hidx = 0;
+	}
+	if ( (hx == lx) && (hy == ly) ) {
+	  ++addlen;
+          if (snakelen < maxlen) { 
+	    rndloot ();
+	  }
+	}
+	speed = document.getElementById ('speed');
+	wait = 500 - speed.value;
+        if (snakelen < maxlen) { 
+	  window.setTimeout(movesnake, wait);
+	} else {
+	  msg ("Finished");
+	  return;
+	}
+      }
+      function run () {
+      var s = "<h1>SNAKE</h1>\n<table id='table'>\n";
+      for (var y = 0; y < height; ++y) {
+	s += "<tr>\n";
+	for (var x = 0; x < width; ++x) {
+	  s += "<td id='t" + x + "_" + y + "'></td>";
+	}
+	s += "\n</tr>\n";
+      }
+      s += "</table>\n<input id='speed' type='range' min='0' max='500' value='400' style='width:100%;'/>\n";
+      document.write (s);
+      setto (hx, hy, "g");
+      rndloot ();
+      movesnake ();
+      }
+      run ();
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
