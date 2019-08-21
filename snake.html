@@ -46,11 +46,11 @@
       }
       function rndloot () {
         do {
-	  if (Math.random () > 0.5) {
-	    lx = 0;
-	  } else {
+//	  if (Math.random () > 0.5) {
+//	    lx = 0;
+//	  } else {
             lx = Math.floor (Math.random () * width);
-	  }
+//	  }
 	  ly = Math.floor (Math.random () * height);
 	} while (getfrom (lx, ly) != "");
 //	if (lx == 0) {
