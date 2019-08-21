@@ -47,7 +47,7 @@
       function rndloot () {
         do {
 //	  if (Math.random () > 0.5) {
-//	    lx = 0;
+//	    lx = 39;
 //	  } else {
             lx = Math.floor (Math.random () * width);
 //	  }
@@ -115,7 +115,7 @@
 	  }
 	} else {
 	  var ty;
-	  if (lx == 0) {
+	  if ( (lx == 0) || (lx == width - 1) ) {
 	    ty = ly - 1;
 	  } else {
 	    ty = ly - 2;
